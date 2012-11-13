@@ -1,0 +1,17 @@
+{
+  "manifest_version": 2,
+  "description": "",
+  "name": "Batch Sources",
+  "version": "0.1",
+  "content_scripts": [
+    {
+      "matches": [ 
+        "https://familysearch.org/pal:/*"
+      ],
+      "run_at": "document_end",
+      "js": [ 
+        "js/inject.js"
+      ]
+    }
+  ]
+}
