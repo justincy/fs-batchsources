@@ -10,7 +10,10 @@
       ],
       "run_at": "document_end",
       "js": [ 
-        "js/inject.js"
+        "inject.js"
+      ],
+      "css": [
+        "batch-sources.css"
       ]
     }
   ]
