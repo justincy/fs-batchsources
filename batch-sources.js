@@ -6,10 +6,6 @@ $(function(){
   var SOURCE_STATUS_NA = 0;
   var SOURCE_STATUS_SUCCESS = 1;
   var SOURCE_STATUS_FAIL = 2;
-  
-  // Global array used for collecting messages
-  // It is cleared out every time the save process starts
-  var sourceMessages = [];
 
   // Get the FS configuration from the page
   var config = JSON.parse($('aside').attr('data-config'));
@@ -93,18 +89,13 @@ $(function(){
         requestedSources.push( source );
       });
       
-      // Reset the source statuses
-      sourceMessages = [];
+      // Clear out any old messages
+      $('#batch-source-messages').html('');
       
       // Save the sources
       batchSourceSave(requestedSources).always(function(){
         
-        // Process the source statuses and create the relavent messages
-        var messageList = $('#batch-source-messages').html('');
-        $.each(sourceMessages, function(i, message){
-          messageList.append( $('<div>').addClass('batch-source-message').html(message) );
-        });
-        
+        // Dispay the confirmation box with messages
         $.fancybox({ href: '#batch-source-dialog-confirmation',  padding: 0, overlayColor: '#fff' });
         
       });
@@ -126,6 +117,10 @@ $(function(){
   
   }
   
+  function addMessage(message) {
+    $('#batch-source-messages').append( $('<div>').addClass('batch-source-message').html(message) );
+  }
+  
   function batchSourceSave(sources) {
     
     var deferreds = [];
@@ -142,10 +137,10 @@ $(function(){
         accept: 'application/json; charset=utf8'
       }).done(function(){
         if( !source.personId ) {
-          sourceMessages.push( 'A source was created for ' + source.name + '.' );
+          addMessage( 'A source was created for ' + source.name + '.' );
         }
       }).fail(function(){
-        sourceMessages.push( 'We failed to create the source for ' + source.name + '.' );
+        addMessage( 'We failed to create the source for ' + source.name + '.' );
       });
       
       // If the source should be attached to a person,
@@ -154,9 +149,9 @@ $(function(){
         createDeferred.done(function(json){
           deferreds.push( 
             attachSource(json.id, source.personId).done(function(){
-              sourceMessages.push( 'A source was created and attached for ' + source.name + '.' );
+              addMessage( 'A source was created and attached for ' + source.name + '.' );
             }).fail(function(){
-              sourceMessages.push( 'A source was created for ' + source.name + ' but we failed to attach it.' );
+              addMessage( 'A source was created for ' + source.name + ' but we failed to attach it.' );
             })
           );
         });
