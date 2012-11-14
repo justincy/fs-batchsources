@@ -114,7 +114,7 @@ $(function(){
               message = 'A source was created for ' + source.name + ' but we failed to attach it.';
             }
           } else {
-            message = 'We failed to created the source for ' + source.name + '.';
+            message = 'We failed to create the source for ' + source.name + '.';
           }
           
           messageList.append( $('<div>').addClass('batch-source-message').html(message) );
@@ -178,6 +178,8 @@ $(function(){
       }
       
       deferreds.push( createDeferred );
+      
+      sources[i] = source;
       
     });
     
