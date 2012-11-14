@@ -43,7 +43,8 @@ $(function(){
     // Create confirmation dialog
     var confirmationDialogInner = $('<div>').addClass('modal-inner clearfix');
     $('<h2>').html('Sources Added to My Source Box').appendTo(confirmationDialogInner);
-    $('<div id="batch-sources-messages">').appendTo(confirmationDialogInner);
+    $('<div id="batch-source-messages">').appendTo(confirmationDialogInner);
+    $('<input type="button" class="form-submit" value="OK">').appendTo(confirmationDialogInner);
     $('<div id="batch-source-dialog-confirmation">').addClass('message-dialog')
       .append(confirmationDialogInner).wrap('<div style="display:none;">').parent().appendTo('#main');
     
@@ -101,7 +102,7 @@ $(function(){
       batchSourceSave(requestedSources).always(function(){
         
         // Process the source statuses and create the relavent messages
-        var messageList = $('#batch-sources-messages').html('');
+        var messageList = $('#batch-source-messages').html('');
         $.each(requestedSources, function(i, source){
           var message;
           if( source.create === SOURCE_STATUS_SUCCESS) {
@@ -119,7 +120,7 @@ $(function(){
           messageList.append( $('<div>').addClass('batch-source-message').html(message) );
         });
         
-        $.fancybox({ href: '#batch-confirmation-dialog-confirmation',  padding: 0, overlayColor: '#fff' });
+        $.fancybox({ href: '#batch-source-dialog-confirmation',  padding: 0, overlayColor: '#fff' });
         
       });
       
