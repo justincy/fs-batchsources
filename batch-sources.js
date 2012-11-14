@@ -7,11 +7,9 @@ $(function(){
   var SOURCE_STATUS_SUCCESS = 1;
   var SOURCE_STATUS_FAIL = 2;
   
-  // Global object used for collecting statuses
-  // It is keyed by the index of the source object
-  // in the sources array. It is cleared out every
-  // time the save process is started.
-  var sourceStatuses = {};
+  // Global array used for collecting messages
+  // It is cleared out every time the save process starts
+  var sourceMessages = [];
 
   // Get the FS configuration from the page
   var config = JSON.parse($('aside').attr('data-config'));
@@ -96,27 +94,14 @@ $(function(){
       });
       
       // Reset the source statuses
-      sourceStatuses = {};
+      sourceMessages = [];
       
       // Save the sources
       batchSourceSave(requestedSources).always(function(){
         
         // Process the source statuses and create the relavent messages
         var messageList = $('#batch-source-messages').html('');
-        $.each(requestedSources, function(i, source){
-          var message;
-          if( source.create === SOURCE_STATUS_SUCCESS) {
-            if( source.attach === SOURCE_STATUS_NA ) {
-              message = 'A source was created for ' + source.name + '.';
-            } else if( source.attach === SOURCE_STATUS_SUCCESS ) {
-              message = 'A source was created and attached for ' + source.name + '.';
-            } else if( source.attach === SOURCE_STATUS_FAIL ) {
-              message = 'A source was created for ' + source.name + ' but we failed to attach it.';
-            }
-          } else {
-            message = 'We failed to create the source for ' + source.name + '.';
-          }
-          
+        $.each(sourceMessages, function(i, message){
           messageList.append( $('<div>').addClass('batch-source-message').html(message) );
         });
         
@@ -156,9 +141,11 @@ $(function(){
         contentType: "application/json",
         accept: 'application/json; charset=utf8'
       }).done(function(){
-        source.create = SOURCE_STATUS_SUCCESS;
+        if( !source.personId ) {
+          sourceMessages.push( 'A source was created for ' + source.name + '.' );
+        }
       }).fail(function(){
-        source.create = SOURCE_STATUS_FAIL;
+        sourceMessages.push( 'We failed to create the source for ' + source.name + '.' );
       });
       
       // If the source should be attached to a person,
@@ -167,19 +154,15 @@ $(function(){
         createDeferred.done(function(json){
           deferreds.push( 
             attachSource(json.id, source.personId).done(function(){
-              source.attach = SOURCE_STATUS_SUCCESS;
+              sourceMessages.push( 'A source was created and attached for ' + source.name + '.' );
             }).fail(function(){
-              source.attach = SOURCE_STATUS_FAIL;
+              sourceMessages.push( 'A source was created for ' + source.name + ' but we failed to attach it.' );
             })
           );
         });
-      } else {
-        source.attach = SOURCE_STATUS_NA;
       }
       
       deferreds.push( createDeferred );
-      
-      sources[i] = source;
       
     });
     
