@@ -251,7 +251,7 @@ function getPersonData(){
         }
       }
     }
-    return undefined;
+    return '';
   };
   
   function getCleanCellValue( cells, position ) {
