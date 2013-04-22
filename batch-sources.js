@@ -8,7 +8,7 @@ $(function(){
   var SOURCE_STATUS_FAIL = 2;
 
   // Get the FS configuration from the page
-  var config = JSON.parse($('aside').attr('data-config'));
+  var config = JSON.parse($('aside hRDetails').attr('data-config'));
   
   // Scrape the page for information about the main person in this record
   var personData = getPersonData();
@@ -30,92 +30,87 @@ $(function(){
     }
     
   });
-
-  // If there is more than one link, switch to batch mode
-  if( sourceLinks.length > 1 && config.userSignedIn ) {
   
-    // Create confirmation dialog
-    var confirmationDialogInner = $('<div>').addClass('modal-inner clearfix');
-    $('<h2>').html('Sources Added to My Source Box').appendTo(confirmationDialogInner);
-    $('<div id="batch-source-messages">').appendTo(confirmationDialogInner);
-    $('<input type="button" class="form-submit" value="OK">').appendTo(confirmationDialogInner);
-    $('<div id="batch-source-dialog-confirmation">').addClass('message-dialog')
-      .append(confirmationDialogInner).wrap('<div style="display:none;">').parent().appendTo('#main');
+  // Create confirmation dialog
+  var confirmationDialogInner = $('<div>').addClass('modal-inner clearfix');
+  $('<h2>').html('Sources Added to My Source Box').appendTo(confirmationDialogInner);
+  $('<div id="batch-source-messages">').appendTo(confirmationDialogInner);
+  $('<input type="button" class="form-submit" value="OK">').appendTo(confirmationDialogInner);
+  $('<div id="batch-source-dialog-confirmation">').addClass('message-dialog')
+    .append(confirmationDialogInner).wrap('<div style="display:none;">').parent().appendTo('#main');
+  
+  // Create batch add dialog
+  var dialogInner = $('<div>').addClass('modal-inner clearfix');
+  $('<h2>').html('Which sources do you want to add?').appendTo(dialogInner);
+  
+  // Setup the source selection list
+  var sourceList = $('<table>').addClass('batch-source-list').appendTo(dialogInner);
+  $.each(sourceLinks, function(i, s){
+    var row = $('<tr>').appendTo(sourceList);
     
-    // Create batch add dialog
-    var dialogInner = $('<div>').addClass('modal-inner clearfix');
-    $('<h2>').html('Which sources do you want to add?').appendTo(dialogInner);
-    
-    // Setup the source selection list
-    var sourceList = $('<table>').addClass('batch-source-list').appendTo(dialogInner);
-    $.each(sourceLinks, function(i, s){
-      var row = $('<tr>').appendTo(sourceList);
+    // Create cell that contains checkbox and person name
+    $('<label>').append( $('<input type="checkbox" value="' + i + '" CHECKED >').addClass('batch-source-checkbox') )
+      .append( $('<span>').html( s.name ) )
+      .appendTo( $('<td>').appendTo(row) );
       
-      // Create cell that contains checkbox and person name
-      $('<label>').append( $('<input type="checkbox" value="' + i + '" CHECKED >').addClass('batch-source-checkbox') )
-        .append( $('<span>').html( s.name ) )
-        .appendTo( $('<td>').appendTo(row) );
-        
-      // Create cell that contains input field for person ID
-      $('<td>').appendTo(row).append( $('<input id="source-attach-' + i + '" type="text">').addClass('batch-source-person-id') );
+    // Create cell that contains input field for person ID
+    $('<td>').appendTo(row).append( $('<input id="source-attach-' + i + '" type="text">').addClass('batch-source-person-id') );
+  });
+  
+  // Add toggle-all links
+  $('<a href="#">All</a>').css('margin-right', '10px').click(function(){
+    $('.batch-source-checkbox').attr('checked', true);
+  }).appendTo(dialogInner);
+  $('<a href="#">None</a>').css('margin-right', '10px').click(function(){
+    $('.batch-source-checkbox').attr('checked', false);
+  }).appendTo(dialogInner);
+  
+  // Create add button and click event handler
+  $('<button>').addClass('form-submit').html('Add Sources').css('float', 'right').click(function(){
+    
+    // Gather list of sources to add
+    var requestedSources = [];
+    $('.batch-source-checkbox:checked').each(function(){
+      // The value of the checkboxes is the index of the
+      // object in the soruceLinks array
+      var sourceIndex = $(this).val();
+      var source = sourceLinks[sourceIndex];
+      
+      // Add a personId if the user requested that the
+      // source also be attached to a person
+      var personId = $('#source-attach-' + sourceIndex).val().toUpperCase();
+      if( personIdReg.test( personId ) ) {
+        source.personId = personId;
+      }
+      
+      requestedSources.push( source );
     });
     
-    // Add toggle-all links
-    $('<a href="#">All</a>').css('margin-right', '10px').click(function(){
-      $('.batch-source-checkbox').attr('checked', true);
-    }).appendTo(dialogInner);
-    $('<a href="#">None</a>').css('margin-right', '10px').click(function(){
-      $('.batch-source-checkbox').attr('checked', false);
-    }).appendTo(dialogInner);
+    // Clear out any old messages
+    $('#batch-source-messages').html('');
     
-    // Create add button and click event handler
-    $('<button>').addClass('form-submit').html('Add Sources').css('float', 'right').click(function(){
+    // Save the sources
+    batchSourceSave(requestedSources).always(function(){
       
-      // Gather list of sources to add
-      var requestedSources = [];
-      $('.batch-source-checkbox:checked').each(function(){
-        // The value of the checkboxes is the index of the
-        // object in the soruceLinks array
-        var sourceIndex = $(this).val();
-        var source = sourceLinks[sourceIndex];
-        
-        // Add a personId if the user requested that the
-        // source also be attached to a person
-        var personId = $('#source-attach-' + sourceIndex).val().toUpperCase();
-        if( personIdReg.test( personId ) ) {
-          source.personId = personId;
-        }
-        
-        requestedSources.push( source );
-      });
+      // Dispay the confirmation box with messages
+      $.fancybox({ href: '#batch-source-dialog-confirmation',  padding: 0, overlayColor: '#fff' });
       
-      // Clear out any old messages
-      $('#batch-source-messages').html('');
-      
-      // Save the sources
-      batchSourceSave(requestedSources).always(function(){
-        
-        // Dispay the confirmation box with messages
-        $.fancybox({ href: '#batch-source-dialog-confirmation',  padding: 0, overlayColor: '#fff' });
-        
-      });
-      
-    }).appendTo(dialogInner);
+    });
     
-    // Add the batch dialog to the page
-    $('<div id="batch-source-dialog">').addClass('message-dialog')
-      .append(dialogInner).wrap('<div style="display:none;">').parent().appendTo('#main');
-    
-    // Add the batch add button to the toolbar
-    $('.flyout .source-add').after(
-      $('<li>').append(
-        $('<a href="#">BATCH SOURCE ADD</a>').click(function(){
-          $.fancybox({ href: '#batch-source-dialog',  padding: 0, overlayColor: '#fff' });
-        })
-      )
-    );
+  }).appendTo(dialogInner);
   
-  }
+  // Add the batch dialog to the page
+  $('<div id="batch-source-dialog">').addClass('source-dialog modal fade hide')
+    .append(dialogInner).wrap('<div style="display:none;">').parent().appendTo('#wrapper');
+  
+  // Add the batch add button to the toolbar
+  $('.source-menu li:nth-child(1)').after(
+    $('<li>').append(
+      $('<a href="#">BATCH SOURCE ADD</a>').click(function(){
+        $.fancybox({ href: '#batch-source-dialog',  padding: 0, overlayColor: '#fff' });
+      })
+    )
+  );
   
   function addMessage(message) {
     $('#batch-source-messages').append( $('<div>').addClass('batch-source-message').html(message) );
