@@ -8,7 +8,7 @@ $(function(){
   var SOURCE_STATUS_FAIL = 2;
 
   // Get the FS configuration from the page
-  var config = JSON.parse($('aside hRDetails').attr('data-config'));
+  var config = JSON.parse($('aside .hRDetails').attr('data-config'));
   
   // Scrape the page for information about the main person in this record
   var personData = getPersonData();
