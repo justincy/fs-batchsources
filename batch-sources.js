@@ -106,8 +106,8 @@ $(function(){
   // Add the batch add button to the toolbar
   $('.source-menu li:nth-child(1)').after(
     $('<li>').append(
-      $('<a class="icon_add source-add">Batch Source Add</a>').click(function(){
-        $.fancybox({ href: '#batch-source-dialog',  padding: 0, overlayColor: '#fff', 'autoDimensions': true });
+      $('<a class="icon_add">Batch Source Add</a>').click(function(){
+        $.fancybox({ href: '#batch-source-dialog',  padding: 15, overlayColor: '#fff', 'autoDimensions': true });
       })
     )
   );
