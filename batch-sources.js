@@ -100,14 +100,14 @@ $(function(){
   }).appendTo(dialogInner);
   
   // Add the batch dialog to the page
-  $('<div id="batch-source-dialog">').addClass('source-dialog modal fade hide')
+  $('<div id="batch-source-dialog">').addClass('')
     .append(dialogInner).wrap('<div style="display:none;">').parent().appendTo('#wrapper');
   
   // Add the batch add button to the toolbar
   $('.source-menu li:nth-child(1)').after(
     $('<li>').append(
-      $('<a href="#">BATCH SOURCE ADD</a>').click(function(){
-        $.fancybox({ href: '#batch-source-dialog',  padding: 0, overlayColor: '#fff' });
+      $('<a class="icon_add source-add">Batch Source Add</a>').click(function(){
+        $.fancybox({ href: '#batch-source-dialog',  padding: 0, overlayColor: '#fff', 'autoDimensions': true });
       })
     )
   );
