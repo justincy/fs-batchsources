@@ -35,9 +35,9 @@ $(function(){
   var confirmationDialogInner = $('<div>').addClass('modal-inner clearfix');
   $('<h2>').html('Sources Added to My Source Box').appendTo(confirmationDialogInner);
   $('<div id="batch-source-messages">').appendTo(confirmationDialogInner);
-  $('<input type="button" class="form-submit" value="OK">').appendTo(confirmationDialogInner);
+  $('<button data-dismiss="modal">').addClass('btn btn-water').html('OK').appendTo(confirmationDialogInner);
   $('<div id="batch-source-dialog-confirmation">').addClass('batch-source-modal modal hide fade')
-    .append(confirmationDialogInner).appendTo('#main');
+    .append(confirmationDialogInner).appendTo('.app-search');
   
   // Create batch add dialog
   var dialogInner = $('<div>').addClass('modal-inner clearfix');
@@ -66,7 +66,7 @@ $(function(){
   }).appendTo(dialogInner);
   
   // Create add button and click event handler
-  $('<button>').addClass('btn btn-water').html('Add Sources').css('float', 'right').click(function(){
+  $('<button data-dismiss="modal">').addClass('btn btn-water').html('Add Sources').css('float', 'right').click(function(){
     
     // Gather list of sources to add
     var requestedSources = [];
@@ -101,7 +101,7 @@ $(function(){
   
   // Add the batch dialog to the page
   $('<div id="batch-source-dialog">').addClass('batch-source-modal modal hide fade')
-    .append(dialogInner).appendTo('#wrapper');
+    .append(dialogInner).appendTo('.app-search');
   
   // Add the batch add button to the toolbar
   $('.source-menu li:nth-child(1)').after(
