@@ -36,8 +36,8 @@ $(function(){
   $('<h2>').html('Sources Added to My Source Box').appendTo(confirmationDialogInner);
   $('<div id="batch-source-messages">').appendTo(confirmationDialogInner);
   $('<input type="button" class="form-submit" value="OK">').appendTo(confirmationDialogInner);
-  $('<div id="batch-source-dialog-confirmation">').addClass('message-dialog')
-    .append(confirmationDialogInner).wrap('<div style="display:none;">').parent().appendTo('#main');
+  $('<div id="batch-source-dialog-confirmation">').addClass('batch-source-modal modal hide fade')
+    .append(confirmationDialogInner).appendTo('#main');
   
   // Create batch add dialog
   var dialogInner = $('<div>').addClass('modal-inner clearfix');
@@ -66,7 +66,7 @@ $(function(){
   }).appendTo(dialogInner);
   
   // Create add button and click event handler
-  $('<button>').addClass('form-submit').html('Add Sources').css('float', 'right').click(function(){
+  $('<button>').addClass('btn btn-water').html('Add Sources').css('float', 'right').click(function(){
     
     // Gather list of sources to add
     var requestedSources = [];
@@ -93,21 +93,20 @@ $(function(){
     batchSourceSave(requestedSources).always(function(){
       
       // Dispay the confirmation box with messages
-      $.fancybox({ href: '#batch-source-dialog-confirmation',  padding: 0, overlayColor: '#fff' });
+      $('#batch-source-dialog-confirmation').modal();
       
     });
     
   }).appendTo(dialogInner);
   
   // Add the batch dialog to the page
-  $('<div id="batch-source-dialog">').addClass('')
-    .append(dialogInner).wrap('<div style="display:none;">').parent().appendTo('#wrapper');
+  $('<div id="batch-source-dialog">').addClass('batch-source-modal modal hide fade')
+    .append(dialogInner).appendTo('#wrapper');
   
   // Add the batch add button to the toolbar
   $('.source-menu li:nth-child(1)').after(
     $('<li>').append(
       $('<a class="icon_add">Batch Source Add</a>').click(function(){
-        //$.fancybox({ href: '#batch-source-dialog',  padding: 15, overlayColor: '#fff', 'autoDimensions': true });
         $('#batch-source-dialog').modal();
       })
     )
