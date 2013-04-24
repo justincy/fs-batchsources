@@ -107,7 +107,8 @@ $(function(){
   $('.source-menu li:nth-child(1)').after(
     $('<li>').append(
       $('<a class="icon_add">Batch Source Add</a>').click(function(){
-        $.fancybox({ href: '#batch-source-dialog',  padding: 15, overlayColor: '#fff', 'autoDimensions': true });
+        //$.fancybox({ href: '#batch-source-dialog',  padding: 15, overlayColor: '#fff', 'autoDimensions': true });
+        $('#batch-source-dialog').modal();
       })
     )
   );
